@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-async function getPrice(date){
+async function dataPoint(date){
     const res = await axios.post('http://servapibi.xm.com.co/hourly', {
         MetricId: "PrecPromContRegu",
         StartDate: date,
@@ -24,4 +24,4 @@ function getArithmeticMean(prices){
     return val/24;
 }
 
-module.exports = { getPrice }
+module.exports = { dataPoint }

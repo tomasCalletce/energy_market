@@ -1,11 +1,11 @@
-const Price = require('./getData.js')
+const DataPoint = require('./getData.js')
 const moment = require('moment')
 const hre = require("hardhat");
 
 async function main() {
 
     const todayMinusFiveDays = moment().subtract(5, 'days').format('YYYY-MM-DD')
-    const price = await Price.getPrice(todayMinusFiveDays)
+    const price = await DataPoint.dataPoint(todayMinusFiveDays)
     const priceParsed = hre.ethers.utils.parseEther(String(price));
     sendDataToContract(priceParsed)
     
