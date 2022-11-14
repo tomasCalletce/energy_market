@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
@@ -14,8 +14,8 @@ contract MyToken is ERC721, Pausable, AccessControl, GetAggregators {
     struct LeverageCertificate {
         uint kwhGeneration;
         uint waterForcast;
-        uint timeStamp;
-        uint maturity;
+        uint timeStampCreation;
+        uint timeStampMaturity;
         bool claimed;
     }
 
@@ -41,6 +41,7 @@ contract MyToken is ERC721, Pausable, AccessControl, GetAggregators {
         _grantRole(PAUSER_ROLE, msg.sender);
         _grantRole(BURNER_ROLE, msg.sender);
         _grantRole(POWER_PLANT, powerPlant);
+        _tokenIdCounter.increment();
     }
 
     function pause() external onlyRole(PAUSER_ROLE) {
@@ -54,6 +55,7 @@ contract MyToken is ERC721, Pausable, AccessControl, GetAggregators {
     function safeMint(address to) external onlyRole(POWER_PLANT) {
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
+        require(leverageCertificates[tokenId-1].timeStampMaturity < block.timestamp);
         _safeMint(to, tokenId);
         leverageCertificates[tokenId] = LeverageCertificate(
             _getOracle_kwhGeneration(),
