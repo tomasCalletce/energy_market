@@ -55,7 +55,7 @@ contract MyToken is ERC721, Pausable, AccessControl, GetAggregators {
     function safeMint(address to) external onlyRole(POWER_PLANT) {
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
-        require(leverageCertificates[tokenId-1].timeStampMaturity < block.timestamp);
+        require(leverageCertificates[tokenId-1].timeStampMaturity < block.timestamp,"out of time window");
         _safeMint(to, tokenId);
         leverageCertificates[tokenId] = LeverageCertificate(
             _getOracle_kwhGeneration(),
@@ -67,6 +67,7 @@ contract MyToken is ERC721, Pausable, AccessControl, GetAggregators {
     }
 
     function burn(uint id) external onlyRole(BURNER_ROLE) {
+        require(!leverageCertificates[id].claimed,"certificate climbed");
         _burn(id);
         leverageCertificates[id].claimed = true;
     }
